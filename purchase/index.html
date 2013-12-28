@@ -1,0 +1,44 @@
+<!doctype html>
+<html ng-app="ethereum">
+<head>
+  <script src="http://code.angularjs.org/1.2.6/angular.min.js"></script>
+  <script src="js/qrcode.min.js"></script>
+  <script src="js/app.js"></script>
+
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="container">
+
+    <div ng-controller="PurchaseCtrl as purchase">
+
+      <form name="purchase_form" class="animate-show" ng-show="purchase.step == 1">
+        <div class="control-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
+          <label for="bitcoin_address">Bitcoin Address</label>
+          <input type="text" name="user_id" ng-model="purchase.userId" ng-pattern="purchase.BITCOIN_REGEX" placeholder="1YourBitcoinAddress" required>
+          <span ng-show="purchase_form.user_id.$valid" class="help-inline">All good!</span>
+          <span ng-show="purchase_form.user_id.$error.pattern" class="help-inline">Invalid Bitcoin address</span>
+          <span ng-show="purchase_form.user_id.$error.required" class="help-inline">Required</span>
+        </div>
+        <button ng-click="purchase.getDepositAddress(purchase.userId)" ng-disabled="purchase_form.$invalid" class="btn btn-primary">Next <i class="glyphicon glyphicon-chevron-right"></i></button>
+      </form>
+
+      <div class="animate-show" ng-show="purchase.step == 2">
+        Okay, {{purchase.userId}}. Send bitcoin to: <span>{{purchase.paymentRequest.depositAddress}}</span>
+        Or here's a handy clickable QR code:<a id="qr_uri" href="{{purchase.paymentLinkText}}"><div id="qr_deposit_address"></div></a>
+        <button type="button" ng-click="purchase.getStatus(purchase.userId)" class="btn btn-primary">Check payment <i class="glyphicon glyphicon-repeat"></i></button>
+      </div>
+      <div class="animate-show" ng-show="purchase.step == 3">
+        Thanks {{purchase.userId}}! You paid <span>{{purchase.paymentRequest.paidSatoshis}} satoshis</span> to <span>{{purchase.paymentRequest.depositAddress}}</span>.
+      </div>
+
+    </div> <!--/PurchaseCtrl-->
+
+  </div>
+  <script type="text/javascript">
+
+  </script>
+
+</body>
+</html>
