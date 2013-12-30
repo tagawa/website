@@ -23,15 +23,25 @@
  * input user address/display message/verify signature
  * view purchases
 
-## model
+## json model
 
-* user
- * user_id (i.e. bitcoin_address)
- * created_date
- * payments[]
-* payment
- * reference_code
- * deposit_address
- * amount_satoshis
- * payment_timestamp
-
+```
+{
+  "userId": "1ThisIsNotARealAddress",
+  "createdUnixtime": 1388347745,
+  "payments": [
+    {
+      "referenceCode": "12345",
+      "depositAddress": "1DepositAddress1",
+      "paidSatoshis": 0,
+      "paymentUnixtime": 1388347782
+    },
+    {
+      "referenceCode": "67890",
+      "depositAddress": "1DepositAddress2",
+      "paidSatoshis": 100000000,
+      "paymentUnixtime": 1388347883
+    }
+  ]
+}
+```

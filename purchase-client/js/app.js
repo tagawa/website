@@ -1,7 +1,7 @@
-var ethereum = angular.module('ethereum', []);
+var ethereum = angular.module('ethereum', ['ngResource']);
 
 ethereum.config(['$compileProvider', function($compileProvider) {   
-        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension|bitcoin):/);
+        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|mailto|bitcoin):/);
     }
 ]);
 
@@ -41,22 +41,20 @@ ethereum.controller('PurchaseCtrl', ['Purchase', function(Purchase) {
 
 }]);
 
-ethereum.factory('Purchase', ['$http', function($http) {
-  var XHR_BASEURI = 'http://localhost:3000/';
-
+ethereum.factory('Purchase', ['$resource', function($resource) {
   return {
     makeRequest: function(userId) {
       // FIXME This literal needs to be replaced with a call to a backend service
       var paymentRequest = {depositAddress: '1ThisIsAFakePaymentAddress', paidSatoshis: 0};
-
       return paymentRequest;
+      //return $resource('/purchases/:userId', {userId: userId});
     },
     getStatus: function(userId, refCode) {
       // FIXME This literal needs to be replaced with a call to a backend service
       var paymentRequest = {depositAddress:'1ThisIsAFakePaymentAddress', paidSatoshis: 100000000};
       return paymentRequest;
+      //return $resource('/purchases/:userId/:refCode', {userId: userId, referenceCode refCode});
     }
-
   }
 }]);
 
