@@ -6,36 +6,43 @@
   <script src="js/angular-route.min.js"></script>
   <script src="js/angular-animate.min.js"></script>
   <script src="js/qrcode.min.js"></script>
-  <script src="js/bitcoinjslib-min.js"></script>
+  <script src="js/bitcoinjs-min.js"></script>
+  <script src="js/sha3.js"></script>
   <script src="js/app.js"></script>
 
-  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <div class="container">
 
-    <div ng-controller="PurchaseCtrl as purchase">
-
-      <form name="purchase_form" class="animate-show" ng-show="purchase.step == 1">
+    <div ng-controller="PurchaseCtrl">
+      
+      <form name="purchase_form" class="animate-show">
         <div class="control-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
-          <label for="bitcoin_address">Bitcoin Address</label>
-          <input type="text" name="user_id" ng-model="purchase.userId" ng-pattern="purchase.BITCOIN_REGEX" placeholder="1YourBitcoinAddress" required>
-          <span ng-show="purchase_form.user_id.$valid" class="help-inline">All good!</span>
-          <span ng-show="purchase_form.user_id.$error.pattern" class="help-inline">Invalid Bitcoin address</span>
-          <span ng-show="purchase_form.user_id.$error.required" class="help-inline">Required</span>
+          <label for="bitcoin_address">Ethereum Address</label>
+          <span>{{ ethAddress || entropy || "Move your mouse to generate a new address" }}
         </div>
-        <button ng-click="purchase.getDepositAddress(purchase.userId)" ng-disabled="purchase_form.$invalid" class="btn btn-primary">Next <i class="glyphicon glyphicon-chevron-right"></i></button>
+        <div class="control-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
+          <label>Enter Ethereum Address</label>
+          <input type="text" name="user_id" ng-model="tempAddress" placeholder="Enter an address here"></input>
+          <button class="btn" ng-click="ethAddress = tempAddress">Enter</button>
+        </div>
+        <div class="control-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
+          <label>Email</label>
+          <input type="text" name="email" ng-model="email"></input>
+        </div>
+        <div class="control-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
+          <label>Intermediate Bitcoin Address:</label>
+          <input type="text" name="btcaddress" ng-model="btcAddress"></input>
+        </div>
+        <div class="control-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
+          <label>Intermediate Private Key:</label>
+          <span ng-show="showKey">{{ btcKey }}</span>
+          <button class="btn" ng-click="showKey = !showKey">{{ showKey ? "Hide" : "Show" }}</button>
+        </div>
+        <div id="qr_deposit_address"></div>
       </form>
-
-      <div class="animate-show" ng-show="purchase.step == 2">
-        Okay, {{purchase.userId}}. Send bitcoin to: <span>{{purchase.paymentRequest.depositAddress}}</span>
-        Or here's a handy clickable QR code:<a id="qr_uri" href="{{purchase.paymentLinkText}}"><div id="qr_deposit_address"></div></a>
-        <button type="button" ng-click="purchase.getStatus(purchase.userId)" class="btn btn-primary">Check payment <i class="glyphicon glyphicon-repeat"></i></button>
-      </div>
-      <div class="animate-show" ng-show="purchase.step == 3">
-        Thanks {{purchase.userId}}! You paid <span>{{purchase.paymentRequest.paidSatoshis}} satoshis</span> to <span>{{purchase.paymentRequest.depositAddress}}</span>.
-      </div>
 
     </div> <!--/PurchaseCtrl-->
 
