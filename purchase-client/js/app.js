@@ -85,7 +85,7 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
 
 }]);
 
-ethereum.factory('Purchase', ['$resource','$http', function($resource,$http) {
+ethereum.factory('Purchase', ['$http', function($http) {
   return {
     getUnspent: function(address,cb) {
         $http.get('/unspent?address='+address)

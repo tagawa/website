@@ -11,6 +11,7 @@
   <script src="js/app.js"></script>
 
   <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/bootstrap-theme.min.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -18,30 +19,46 @@
 
     <div ng-controller="PurchaseCtrl">
       
-      <form name="purchase_form" class="animate-show">
-        <div class="control-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
-          <label for="bitcoin_address">Ethereum Address</label>
-          <span>{{ ethAddress || entropy || "Move your mouse to generate a new address" }}
+      <form name="purchase_form" class="animate-show form-horizontal" role="form">
+        <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
+          <label class="col-sm-3 control-label">Ethereum Address:</label>
+          <div class="col-sm-8">
+            <span>{{ ethAddress || entropy || "Move your mouse to generate a new address" }}</span>
+          </div>
         </div>
-        <div class="control-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
-          <label>Enter Ethereum Address</label>
-          <input type="text" name="user_id" ng-model="tempAddress" placeholder="Enter an address here"></input>
-          <button class="btn" ng-click="ethAddress = tempAddress">Enter</button>
+        <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
+          <label for="user_id" class="col-sm-3 control-label">Enter Ethereum Address:</label>
+          <div class="col-sm-8">
+            <input type="text" name="user_id" ng-model="tempAddress" placeholder="Enter an address here" id="user_id" class="form-control"></input>
+          </div>
+          <div class="col-sm-1">
+            <button class="btn btn-default pull-right" ng-click="ethAddress = tempAddress">Enter</button>
+          </div>
         </div>
-        <div class="control-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
-          <label>Email</label>
-          <input type="text" name="email" ng-model="email"></input>
+        <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
+          <label for="email" class="col-sm-3 control-label">Email:</label>
+          <div class="col-sm-8">
+            <input type="text" name="email" ng-model="email" id="email" class="form-control" placeholder="account@domain.tld"></input>
+          </div>
         </div>
-        <div class="control-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
-          <label>Intermediate Bitcoin Address:</label>
-          <input type="text" name="btcaddress" ng-model="btcAddress"></input>
+
+        <div ng-show="ethAddress">
+          <div class="col-sm-8 col-sm-offset-3" id="qr_deposit_address"></div>
+          <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
+            <label for="btcaddress" class="col-sm-3 control-label">Intermediate Bitcoin Address:</label>
+            <div class="col-sm-8">
+              <input type="text" name="btcaddress" ng-model="btcAddress" id="btcaddress" class="form-control"></input]>
+            </div>
+          </div>
+          <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
+            <label class="col-sm-3 control-label">Intermediate Private Key:</label>
+            <div class="col-sm-8">
+              <span ng-show="showKey">{{ btcKey }}</span>
+              <button class="btn btn-default" ng-click="showKey = !showKey">{{ showKey ? "Hide" : "Show" }}</button>
+            </div>
+          </div>
         </div>
-        <div class="control-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
-          <label>Intermediate Private Key:</label>
-          <span ng-show="showKey">{{ btcKey }}</span>
-          <button class="btn" ng-click="showKey = !showKey">{{ showKey ? "Hide" : "Show" }}</button>
-        </div>
-        <div id="qr_deposit_address"></div>
+
       </form>
 
     </div> <!--/PurchaseCtrl-->
