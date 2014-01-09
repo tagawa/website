@@ -43,7 +43,11 @@
         </div>
 
         <div ng-show="ethAddress">
-          <div class="col-sm-8 col-sm-offset-3" id="qr_deposit_address"></div>
+          <div class="row">
+            <div class="col-sm-8 col-sm-offset-3">
+              <a href="bitcoin:{{btcAddress}}"><div id="qr_deposit_address"></div></a>
+            </div>
+          </div>
           <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
             <label for="btcaddress" class="col-sm-3 control-label">Intermediate Bitcoin Address:</label>
             <div class="col-sm-8">
