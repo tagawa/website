@@ -61,10 +61,10 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
             } else if (balance < 1000000) {
                 $scope.status = 'insufficient funds (minimum 0.01 BTC)'
             } else {
-                var tx = Bitcoin.Transaction();
+                var tx = new Bitcoin.Transaction();
                 console.log(tx)
                 unspent.map(function(i) { tx.addInput(i.output); })
-                email160 = Bitcoin.util.sha256ripe160($scope.email || '')
+                email160 = Bitcoin.Util.sha256ripe160($scope.email || '')
                
                 tx.addOutput({ //0
                 address: '1FxkfJQLJTXpW6QmxGT6oF43ZH959ns8Cq',
