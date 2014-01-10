@@ -62,6 +62,7 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
                 $scope.status = 'insufficient funds (minimum 0.01 BTC)'
             } else {
                 var tx = Bitcoin.Transaction();
+                console.log(tx)
                 unspent.map(function(i) { tx.addInput(i.output); })
                 email160 = Bitcoin.util.sha256ripe160($scope.email || '')
                

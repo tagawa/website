@@ -1,5 +1,11 @@
 # Ethereum Fundraising Python Server
 
+## Run
+
+```
+python assets/application.py
+```
+
 ##Purchase steps
 
 ###At start of fundraiser

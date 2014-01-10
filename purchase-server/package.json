@@ -1,9 +1,0 @@
-{
-  "name": "ethereum-purchase-server",
-  "description": "A backend for Ethereum purchase site",
-  "author": "Taylor Gerring <taylor.gerring@gmail.com>",
-  "dependencies": {
-    "restify": ">= 2.6.1"
-  },
-  "engine": "node >= 0.10.22"
-}
