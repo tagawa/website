@@ -89,7 +89,7 @@ ethereum.factory('Purchase', ['$http', function($http) {
              .error(function(e) { cb(e) })
     },
     sendTx: function(data,cb) {
-        $http.post('/sendtx',data)
+        $http.post('/pushtx',data)
              .success(function(s) { cb(null,s) })
              .error(function(e) { cb(e) })
     }

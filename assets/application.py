@@ -7,7 +7,7 @@ app = Flask(__name__)
 #BITCOIN_REGEX = '^[13][1-9A-HJ-NP-Za-km-z]{20,40}$'
 
 @app.route('/pushtx', methods=['POST'])
-def pushtx(tx):
+def pushtx():
     result = {}
     try:
         client = MongoClient()
