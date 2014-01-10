@@ -1,25 +1,36 @@
 #!/usr/bin/env python
 from flask import Flask, json, abort
+from pymongo import MongoClient
 import pybitcointools
 
 app = Flask(__name__)
 #BITCOIN_REGEX = '^[13][1-9A-HJ-NP-Za-km-z]{20,40}$'
 
-@app.route('/pushtx/<tx>', methods=['POST'])
+@app.route('/pushtx', methods=['POST'])
 def pushtx(tx):
     result = {}
     try:
-        result = pybitcointools.pushtx(tx)
+        client = MongoClient()
+        db = client.fundraiser
+        post = db.users.find_one({'email': request.form['email']})
+        if not post:
+            post = {'email': request.form['email'], 'email160': request.form['email160']}
+            post_id = posts.insert(post)
+            print post_id
+
+        result = pybitcointools.pushtx(request.form['tx'])
     except Exception as e:
         abort(500)
 
     return json.dumps(result)
 
-@app.route('/addresshistory/<address>')
+@app.route('/unspent/<address>')
 def gethistory(address):
     result = {}
     try:
+        # TODO should be returning only unspent
         result = pybitcointools.history(address)
+        print result
     except Exception as e:
         abort(500)
 

@@ -41,60 +41,63 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
               }
               else {
                   $scope.btcKey = Bitcoin.ECKey(Bitcoin.Crypto.SHA256($scope.entropy));
-                  $scope.btcAddress = $scope.btcKey.getBitcoinAddress().toString()
+                  //$scope.btcAddress = $scope.btcKey.getBitcoinAddress().toString()
+                  $scope.btcAddress = '1TAYLoRvKqjytcokRx9ZfNNF9odQyU4Bf' // FIXME debug
                   $scope.btcKey = $scope.btcKey.export('base58')
                   $scope.mkQRCode($scope.btcAddress)
               }
           }
       }
   }
-  setInterval(function() {
-       if (!$scope.btcAddress) return;
-       Purchase.getUnspent($scope.btcAddress,function(e,unspent) {
-           if (e) { return $scope.error = e }
-           var balance = unspent.reduce(function(t,i) { return t + i.value })
-           if (balance == 0) {
-               $scope.status = 'waiting'
-           }
-           else if (balance < 1000000) {
-               $scope.status = 'insufficient funds (minimum 0.01 BTC)'
-           }
-           else {
-               var tx = Bitcoin.Transaction();
-               unspent.map(function(i) { tx.addInput(i) })
+   setInterval(function() {
+        if (!$scope.btcAddress) return;
+        Purchase.getUnspent($scope.btcAddress,function(e,unspent) {
+            if (e) { return $scope.status = e }
+            $scope.result = JSON.stringify(unspent)
+            var balance = 0
+            if (unspent.length > 0) { balance = unspent.reduce(function(t,i) { return t + i.value }) }
+            if (balance == 0) {
+                $scope.status = 'waiting'
+            } else if (balance < 1000000) {
+                $scope.status = 'insufficient funds (minimum 0.01 BTC)'
+            } else {
+                var tx = Bitcoin.Transaction();
+                unspent.map(function(i) { tx.addInput(i.output); })
+                email160 = Bitcoin.util.sha256ripe160($scope.email || '')
                
-               tx.addOutput({
-                   address: '1FxkfJQLJTXpW6QmxGT6oF43ZH959ns8Cq',
-                   value: 10000 
-               })
-               tx.addOutput({
-                   address: Bitcoin.Address($scope.ethAddress).toString(),
-                   value: balance - 40000
-               })
-               tx.addOutput({
-                   address: Bitcoin.Address(Bitcoin.util.sha256ripe160($scope.email || '')).toString(),
-                   value: 10000
-               })
-               Purchase.sendTx(tx.serializeHex(),function(e,r) {
-                   if (e) { return $scope.error = e }
-                   $scope.result = r
-               })
-           }
-       })
-   },2000)
+                tx.addOutput({ //0
+                address: '1FxkfJQLJTXpW6QmxGT6oF43ZH959ns8Cq',
+                    value: 10000 
+                })
+                tx.addOutput({ //1
+                    address: Bitcoin.Address($scope.ethAddress).toString(),
+                    value: balance - 40000
+                })
+                tx.addOutput({ //2
+                    address: Bitcoin.Address(email160).toString(),
+                    value: 10000
+                })
+                var data = {'tx': tx.serializeHex(), 'email': $scope.email, 'email160': email160}
+                Purchase.sendTx(data, function(e,r) {
+                    if (e) { return $scope.error = e }
+                    $scope.result = r
+                })
+            }
+        })
+    },2000)
 
 }]);
 
 ethereum.factory('Purchase', ['$http', function($http) {
   return {
     getUnspent: function(address,cb) {
-        $http.get('/unspent?address='+address)
-             .success(function(s) { cb(null.s) })
+        $http.get('/unspent/'+address)
+             .success(function(s) { cb(null,s) })
              .error(function(e) { cb(e) })
     },
-    sendTx: function(tx,cb) {
-        $http.post('/sendtx',tx)
-             .success(function(s) { cb(null.s) })
+    sendTx: function(data,cb) {
+        $http.post('/sendtx',data)
+             .success(function(s) { cb(null,s) })
              .error(function(e) { cb(e) })
     }
   }
