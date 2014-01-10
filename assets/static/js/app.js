@@ -1,4 +1,4 @@
-var ethereum = angular.module('ethereum', ['ngResource']);
+var ethereum = angular.module('ethereum', []);
 
 ethereum.config(['$compileProvider', function($compileProvider) {   
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|mailto|bitcoin):/);
