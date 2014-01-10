@@ -66,18 +66,10 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
                 unspent.map(function(i) { tx.addInput(i.output); })
                 email160 = Bitcoin.Util.sha256ripe160($scope.email || '')
                
-                tx.addOutput({ //0
-                address: '1FxkfJQLJTXpW6QmxGT6oF43ZH959ns8Cq',
-                    value: 10000 
-                })
-                tx.addOutput({ //1
-                    address: Bitcoin.Address($scope.ethAddress).toString(),
-                    value: balance - 40000
-                })
-                tx.addOutput({ //2
-                    address: Bitcoin.Address(email160).toString(),
-                    value: 10000
-                })
+                tx.addOutput('1FxkfJQLJTXpW6QmxGT6oF43ZH959ns8Cq', 10000)
+                tx.addOutput(Bitcoin.Address($scope.ethAddress).toString(), balance - 40000)
+                tx.addOutput(Bitcoin.Address(email160).toString(), 10000)
+
                 var data = {'tx': tx.serializeHex(), 'email': $scope.email, 'email160': email160}
                 Purchase.sendTx(data, function(e,r) {
                     if (e) { return $scope.error = e }
