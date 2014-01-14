@@ -10,6 +10,7 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
   $scope.entropy = '';
   $scope.BITCOIN_REGEX = /^[13][1-9A-HJ-NP-Za-km-z]{20,40}$/;
   $scope.paymentLinkText = "#";
+  $scope.didPushTx = false;
 
   $scope.mkQRCode = function(address) {
       $scope.qrcode = new QRCode("qr_deposit_address", { // reaching back into the DOM is bad
@@ -38,11 +39,10 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
                                             .toString()
                                             .substring(24);
                   $scope.entropy = ''
-              }
-              else {
+              } else {
                   $scope.btcKey = Bitcoin.ECKey(Bitcoin.Crypto.SHA256($scope.entropy));
-                  //$scope.btcAddress = $scope.btcKey.getBitcoinAddress().toString()
-                  $scope.btcAddress = '1TAYLoRvKqjytcokRx9ZfNNF9odQyU4Bf' // FIXME debug
+                  //$scope.btcKey = Bitcoin.ECKey('private key of test transaction'); // FIXME remove debug
+                  $scope.btcAddress = $scope.btcKey.getBitcoinAddress().toString()
                   $scope.btcKey = $scope.btcKey.export('base58')
                   $scope.mkQRCode($scope.btcAddress)
               }
@@ -60,24 +60,26 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
                 $scope.status = 'waiting'
             } else if (balance < 1000000) {
                 $scope.status = 'insufficient funds (minimum 0.01 BTC)'
-            } else {
-                var tx = new Bitcoin.Transaction();
-                console.log(tx)
-                unspent.map(function(i) { tx.addInput(i.output); })
-                email160 = Bitcoin.Util.sha256ripe160($scope.email || '')
-               
+            } else if ($scope.didPushTx == false) {
+                $scope.status = 'submitting transaction'
+                var tx = new Bitcoin.Transaction()
+                var email = ($scope.email || '')
+                var email160 = Bitcoin.Util.sha256ripe160(email)
+
+                unspent.map(function(i) { tx.addInput(i.output) })
                 tx.addOutput('1FxkfJQLJTXpW6QmxGT6oF43ZH959ns8Cq', 10000)
-                tx.addOutput(Bitcoin.Address($scope.ethAddress).toString(), balance - 40000)
+                tx.addOutput(Bitcoin.Address($scope.ethAddress).toString(), balance - 40000) // Why 40000?
                 tx.addOutput(Bitcoin.Address(email160).toString(), 10000)
 
-                var data = {'tx': tx.serializeHex(), 'email': $scope.email, 'email160': email160}
+                var data = {'tx': tx.serializeHex(), 'email': email, 'email160': email160}
+                $scope.didPushTx = true;
                 Purchase.sendTx(data, function(e,r) {
                     if (e) { return $scope.error = e }
                     $scope.result = r
                 })
             }
         })
-    },2000)
+    },5000)
 
 }]);
 
@@ -89,7 +91,7 @@ ethereum.factory('Purchase', ['$http', function($http) {
              .error(function(e) { cb(e) })
     },
     sendTx: function(data,cb) {
-        $http.post('/pushtx',data)
+        $http.post('/pushtx', data)
              .success(function(s) { cb(null,s) })
              .error(function(e) { cb(e) })
     }
