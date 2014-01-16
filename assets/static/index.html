@@ -37,6 +37,8 @@
             <input type="password" name="password" ng-model="password" id="password" class="form-control" required>
             <span class="invalid" ng-show="purchase_form.password.$error.required">&#10008; Required</span>
             <span ng-show="purchase_form.password.$valid">&#10004; Looks good!</span>
+            <ul id="strength" check-strength="password"></ul>
+
           </div>
         </div>
 
