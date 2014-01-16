@@ -25,9 +25,9 @@
           <label for="email" class="col-sm-3 control-label">Email:</label>
           <div class="col-sm-8">
             <input type="email" name="email" ng-model="email" id="email" placeholder="account@domain.tld" class="form-control" required>
-            <span ng-show="purchase_form.email.$error.required">&#10008; Required</span></span>
-            <span ng-show="purchase_form.email.$error.email">&#10008; Invalid format</span></span>
-            <span ng-show="purchase_form.email.$valid">&#10004; Looks good!</span>
+            <span class="error" ng-show="purchase_form.email.$error.required">&#10008; Required</span></span>
+            <span class="error" ng-show="purchase_form.email.$error.email">&#10008; Invalid format</span></span>
+            <span class="valid" ng-show="purchase_form.email.$valid">&#10004; Looks good!</span>
           </div>
         </div>
 
@@ -35,20 +35,20 @@
           <label for="password" class="col-sm-3 control-label">Password:</label>
           <div class="col-sm-8">
             <input type="password" name="password" ng-model="password" id="password" class="form-control" required>
-            <span class="invalid" ng-show="purchase_form.password.$error.required">&#10008; Required</span>
-            <span ng-show="purchase_form.password.$valid">&#10004; Looks good!</span>
+            <span class="error" ng-show="purchase_form.password.$error.required">&#10008; Required</span>
+            <span class="valid" ng-show="purchase_form.password.$valid">&#10004; Looks good!</span>
             <ul id="strength" check-strength="password"></ul>
 
           </div>
         </div>
 
-        <div class="form-group" ng-class="{error: purchase_form.password != purchase_form.password_repeat}">
+        <div class="form-group">
           <label for="password_repeat" class="col-sm-3 control-label">Confirm password:</label>
           <div class="col-sm-8">
             <input type="password" name="password_repeat" ng-model="password_repeat" id="password_repeat" class="form-control" required  data-match="password">
-            <span class="invalid" ng-show="purchase_form.password_repeat.$error.required">&#10008; Required</span>
-            <span class="invalid" ng-show="purchase_form.password_repeat.$error.match">&#10008; No match</span>
-            <span ng-show="purchase_form.password_repeat.$valid">&#10004; Looks good!</span>
+            <span class="error" ng-show="purchase_form.password_repeat.$error.required">&#10008; Required</span>
+            <span class="error" ng-show="purchase_form.password_repeat.$error.match">&#10008; No match</span>
+            <span class="valid" ng-show="purchase_form.password_repeat.$valid">&#10004; Looks good!</span>
           </div>
         </div>
 
@@ -86,8 +86,8 @@
           <div class="form-group">
             <label class="col-sm-3 control-label">Intermediate Private Key:</label>
             <div class="col-sm-8">
-              <span ng-show="showKey">{{ btcKey }}</span>
-              <button class="btn btn-default" ng-click="showKey = !showKey">{{ showKey ? "Hide" : "Show" }}</button>
+              <button type="button" class="btn btn-default" ng-click="showKey = !showKey">{{ showKey ? "Hide" : "Show" }}</button>
+              <input type="text" class="form-control" ng-show="showKey" ng-model="btcKey">
             </div>
           </div>
         </div>

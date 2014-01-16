@@ -51,3 +51,11 @@ ul#strength {
     margin-right:1px;
     width:20px;
 }
+
+.valid {
+  color: green;
+}
+
+.error {
+  color: red;
+}

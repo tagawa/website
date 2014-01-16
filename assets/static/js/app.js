@@ -133,7 +133,6 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
           $scope.entropy = ''
         } else {
           $scope.btcKey = Bitcoin.ECKey(Bitcoin.Crypto.SHA256($scope.entropy));
-          //$scope.btcKey = Bitcoin.ECKey('private key of test transaction'); // FIXME remove debug
           $scope.btcAddress = $scope.btcKey.getBitcoinAddress().toString()
           $scope.btcKey = $scope.btcKey.export('base58')
           $scope.mkQRCode($scope.btcAddress)
