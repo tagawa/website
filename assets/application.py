@@ -28,11 +28,12 @@ def pushtx():
 
 @app.route('/unspent/<address>')
 def gethistory(address):
-    result = {}
+    result = []
     try:
-        # TODO should be returning only unspent
-        result = pybitcointools.history(address)
-        #print result
+        txs = pybitcointools.history(address)
+        for tx in txs:
+            if not 'spend' in tx:
+                result.append(tx)
     except Exception as e:
         raise
         abort(500)
