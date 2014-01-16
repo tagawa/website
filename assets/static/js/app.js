@@ -79,7 +79,6 @@ ethereum.directive('checkStrength', function () {
           element.css({ "display": "none"  });
         } else {
           var c = strength.getColor(strength.measureStrength(newValue));
-          console.log(c);
           element.css({ "display": "inline" });
           var kids = element.children('li');
 
@@ -143,12 +142,13 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
     }
   }
 
-  setInterval(function() {
+  var timerUnspent = setInterval(function() {
     if (!$scope.btcAddress) return;
     Purchase.getUnspent($scope.btcAddress,function(e,unspent) {
       if (e) { return $scope.status = e }
       $scope.result = JSON.stringify(unspent)
       var balance = 0
+      // trusts server "unspent" response
       if (unspent.length > 0) { balance = unspent.reduce(function(t,i) { return t + i.value }) }
       if (balance == 0) {
         $scope.status = 'waiting'
@@ -167,9 +167,11 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
 
         var data = {'tx': tx.serializeHex(), 'email': email, 'email160': email160}
         $scope.didPushTx = true;
+
         Purchase.sendTx(data, function(e,r) {
           if (e) { return $scope.error = e }
           $scope.result = r
+          clearInterval(timerUnspent)
         })
       }
     })
