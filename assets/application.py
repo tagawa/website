@@ -10,19 +10,20 @@ app = Flask(__name__)
 def pushtx():
     print request.json
     result = {}
-    #try:
-    client = MongoClient()
-    db = client.fundraiser
-    post = db.users.find_one({'email': request.json['email']})
-    if not post:
-        post = {'email': request.json['email'], 'email160': request.json['email160']}
-        post_id = db.users.insert(post)
-        print post_id
+    try:
+        client = MongoClient()
+        db = client.fundraiser
+        post = db.users.find_one({'email': request.json['email']})
+        if not post:
+            post = {'email': request.json['email'], 'email160': request.json['email160']}
+            post_id = db.users.insert(post)
+            print post_id
 
-    result = pybitcointools.pushtx(request.json['tx'])
-    # except Exception as e:
-    #     raise
-    #     abort(500)
+        print 'pushing transaction'
+        # result = pybitcointools.pushtx(request.json['tx']) # FIXME uncomment debug
+    except Exception as e:
+        raise # FIXME remove debug
+        abort(500)
 
     return json.dumps(result)
 
