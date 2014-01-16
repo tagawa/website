@@ -5,7 +5,6 @@
   line-height:20px;
   opacity:1;
   padding:10px;
-  border:1px solid black;
 }
  
 .animate-show.ng-hide-add,
@@ -21,4 +20,10 @@
 
 #qr_deposit_address {
   margin-bottom: 1em;
+}
+
+form {
+  border:1px solid black;
+  margin: 1em;
+  padding: 1em;
 }
