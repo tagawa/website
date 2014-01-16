@@ -20,42 +20,65 @@
 
     <div ng-controller="PurchaseCtrl">
       
-      <form name="purchase_form" class="animate-show form-horizontal" role="form">
-        <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
-          <label class="col-sm-3 control-label">Ethereum Address:</label>
-          <div class="col-sm-8">
-            <span>{{ ethAddress || entropy || "Move your mouse to generate a new address" }}</span>
-          </div>
-        </div>
-        <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
-          <label for="user_id" class="col-sm-3 control-label">Enter Ethereum Address:</label>
-          <div class="col-sm-8">
-            <input type="text" name="user_id" ng-model="tempAddress" placeholder="Enter an address here" id="user_id" class="form-control">
-          </div>
-          <div class="col-sm-1">
-            <button class="btn btn-default pull-right" ng-click="ethAddress = tempAddress">Enter</button>
-          </div>
-        </div>
-        <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
+      <form name="purchase_form" class="animate-show form-horizontal css-form" role="form">
+        <div class="form-group">
           <label for="email" class="col-sm-3 control-label">Email:</label>
           <div class="col-sm-8">
-            <input type="text" name="email" ng-model="email" id="email" class="form-control" placeholder="account@domain.tld">
+            <input type="email" name="email" ng-model="email" id="email" placeholder="account@domain.tld" class="form-control" required>
+            <span class="error" ng-show="purchase_form.email.$error.required">Required</span>
+            <span class="invalid" ng-show="purchase_form.email.$error.email">Invalid format</span>
           </div>
         </div>
 
-        <div ng-show="ethAddress">
-          <div class="row">
+        <div class="form-group">
+          <label for="password" class="col-sm-3 control-label">Password:</label>
+          <div class="col-sm-8">
+            <input type="password" name="password" ng-model="password" id="password" class="form-control" required>
+            <span class="invalid" ng-show="purchase_form.password.$error.required">Required</span>
+          </div>
+        </div>
+
+        <div class="form-group" ng-class="{error: purchase_form.password != purchase_form.password_repeat}">
+          <label for="password_repeat" class="col-sm-3 control-label">Confirm password:</label>
+          <div class="col-sm-8">
+            <input type="password" name="password_repeat" ng-model="password_repeat" id="password_repeat" class="form-control" required  data-match="password">
+            <span class="invalid" ng-show="purchase_form.password_repeat.$error.required">Required</span>
+            <span class="invalid" ng-show="purchase_form.password_repeat.$error.match">No match</span>
+          </div>
+        </div>
+
+
+
+        <div ng-hide="purchase_form.$invalid">
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Ethereum Address:</label>
+            <div class="col-sm-8">
+              <span>{{ ethAddress || entropy || "Move your mouse to generate a new address" }}</span>
+            </div>
+          </div>
+          <!--
+          <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
+            <label for="user_id" class="col-sm-3 control-label">Enter Ethereum Address:</label>
+            <div class="col-sm-8">
+              <input type="text" name="user_id" ng-model="tempAddress" placeholder="Enter an address here" id="user_id" class="form-control">
+            </div>
+            <div class="col-sm-1">
+              <button class="btn btn-default pull-right" ng-click="ethAddress = tempAddress">Enter</button>
+            </div>
+          </div>
+          -->
+          <div class="row" ng-show="ethAddress">
             <div class="col-sm-8 col-sm-offset-3">
               <a href="bitcoin:{{btcAddress}}"><div id="qr_deposit_address"></div></a>
             </div>
           </div>
-          <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
+          <div class="form-group">
             <label for="btcaddress" class="col-sm-3 control-label">Intermediate Bitcoin Address:</label>
             <div class="col-sm-8">
               <input type="text" name="btcaddress" ng-model="btcAddress" id="btcaddress" class="form-control" disabled="disabled">
             </div>
           </div>
-          <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
+          <div class="form-group">
             <label class="col-sm-3 control-label">Intermediate Private Key:</label>
             <div class="col-sm-8">
               <span ng-show="showKey">{{ btcKey }}</span>

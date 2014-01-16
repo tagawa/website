@@ -5,6 +5,20 @@ ethereum.config(['$compileProvider', function($compileProvider) {
     }
 ]);
 
+ethereum.directive('match',['$parse', function ($parse) {
+  return {
+    require: 'ngModel',
+    restrict: 'A',
+    link: function(scope, elem, attrs, ctrl) {
+      scope.$watch(function() {
+        return (ctrl.$pristine && angular.isUndefined(ctrl.$modelValue)) || $parse(attrs.match)(scope) === ctrl.$modelValue;
+      }, function(currentValue) {
+        ctrl.$setValidity('match', currentValue);
+      });
+    }
+  };
+}]);
+
 ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $scope) {
   window.wscope = $scope;
   $scope.entropy = '';
@@ -24,7 +38,8 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
   }
 
   window.onmousemove = function(e) {
-      if (!$scope.btcAddress) {
+    if (!$scope.email || ($scope.password != $scope.password_repeat)) return;
+    if (!$scope.btcAddress) {
           var roundSeed = '' + e.x + e.y + new Date().getTime() + Math.random();
           Bitcoin.Crypto.SHA256(roundSeed,{ asBytes: true })
                  .slice(0,3)
