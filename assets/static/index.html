@@ -38,7 +38,6 @@
             <span class="error" ng-show="purchase_form.password.$error.required">&#10008; Required</span>
             <span class="valid" ng-show="purchase_form.password.$valid">&#10004; Looks good!</span>
             <ul id="strength" check-strength="password"></ul>
-
           </div>
         </div>
 
@@ -58,7 +57,7 @@
           <div class="form-group">
             <label class="col-sm-3 control-label">Ethereum Address:</label>
             <div class="col-sm-8">
-              <span>{{ ethAddress || entropy || "Move your mouse to generate a new address" }}</span>
+              <span>{{ ethAddress || "Move your mouse to generate a new address" }}</span>
             </div>
           </div>
           <!--
