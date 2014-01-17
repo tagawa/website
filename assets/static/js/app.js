@@ -101,6 +101,7 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
   window.wscope = $scope;
   $scope.entropy = '';
   $scope.didPushTx = false;
+  $scope.debug = '(Debug output)'
 
   $scope.mkQRCode = function(address) {
     $scope.qrcode = new QRCode("qr_deposit_address", { // reaching back into the DOM is bad
@@ -115,7 +116,7 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
 
   window.onmousemove = function(e) {
     // only work when the first steps are done
-    if (!$scope.email || ($scope.password != $scope.password_repeat)) return;
+    if (!$scope.email_repeat || ($scope.password != $scope.password_repeat)) return;
     // only work if a btcAddress doesn't already exist
     if (!$scope.btcAddress) {
       var roundSeed = '' + e.x + e.y + new Date().getTime() + Math.random();
