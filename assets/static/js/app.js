@@ -5,6 +5,7 @@ ethereum.config(['$compileProvider', function($compileProvider) {
   }
 ]);
 
+// allows for form validation based on one element matching another
 ethereum.directive('match',['$parse', function ($parse) {
   return {
     require: 'ngModel',
@@ -19,7 +20,7 @@ ethereum.directive('match',['$parse', function ($parse) {
   };
 }]);
 
-
+// password meter
 ethereum.directive('checkStrength', function () {
   return {
     replace: false,
@@ -29,9 +30,10 @@ ethereum.directive('checkStrength', function () {
       
       var strength = {
         colors: ['#F00', '#F90', '#FF0', '#9F0', '#0F0'],
+        // TODO this strenght algorithm needs improvement
         measureStrength: function (p) {
           var _force = 0;                    
-          var _regex = /[$-/:-?{-~!"^_`\[\]]/g; //" (Commentaire juste là pour pas pourrir la coloration sous Sublime...)
+          var _regex = /[$-/:-?{-~!"^_`\[\]]/g; //" (commented quote to fix highlighting in Sublime Text)
                                 
           var _lowerLetters = /[a-z]+/.test(p);                    
           var _upperLetters = /[A-Z]+/.test(p);
@@ -39,13 +41,12 @@ ethereum.directive('checkStrength', function () {
           var _symbols = _regex.test(p);
                                 
           var _flags = [_lowerLetters, _upperLetters, _numbers, _symbols];                    
-          //var _passedMatches = $.grep(_flags, function (el) { return el === true; }).length;                                          
           var _passedMatches = _flags.map(function (el) { return el === true; });
           _matches = 0;
           for (var i = 0; i < _passedMatches.length; i++) {
             if (_passedMatches[i])
               _matches += 1;
-          };
+          }
           _force += 2 * p.length + ((p.length >= 10) ? 1 : 0);
           _force += _matches * 10;
               
@@ -99,8 +100,6 @@ ethereum.directive('checkStrength', function () {
 ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $scope) {
   window.wscope = $scope;
   $scope.entropy = '';
-  $scope.BITCOIN_REGEX = /^[13][1-9A-HJ-NP-Za-km-z]{20,40}$/;
-  $scope.paymentLinkText = "#";
   $scope.didPushTx = false;
 
   $scope.mkQRCode = function(address) {
@@ -115,7 +114,9 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
   }
 
   window.onmousemove = function(e) {
+    // only work when the first steps are done
     if (!$scope.email || ($scope.password != $scope.password_repeat)) return;
+    // only work if a btcAddress doesn't already exist
     if (!$scope.btcAddress) {
       var roundSeed = '' + e.x + e.y + new Date().getTime() + Math.random();
       Bitcoin.Crypto.SHA256(roundSeed,{ asBytes: true })
@@ -149,7 +150,7 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
       var balance = 0
       // trusts server "unspent" response
       if (unspent.length > 0) { balance = unspent.reduce(function(t,i) { return t + i.value }) }
-      if (balance == 0) {
+      if (balance <= 0) {
         $scope.status = 'waiting'
       } else if (balance < 1000000) {
         $scope.status = 'insufficient funds (minimum 0.01 BTC)'
