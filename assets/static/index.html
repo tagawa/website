@@ -31,7 +31,7 @@
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" ng-hide="ethAddress">
           <label for="password" class="col-sm-3 control-label">Password:</label>
           <div class="col-sm-8">
             <input type="password" name="password" ng-model="password" id="password" class="form-control" required>
@@ -41,7 +41,7 @@
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" ng-hide="ethAddress">
           <label for="password_repeat" class="col-sm-3 control-label">Confirm password:</label>
           <div class="col-sm-8">
             <input type="password" name="password_repeat" ng-model="password_repeat" id="password_repeat" class="form-control" required  data-match="password">
@@ -76,13 +76,13 @@
               <a href="bitcoin:{{btcAddress}}"><div id="qr_deposit_address"></div></a>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group" ng-show="ethAddress">
             <label for="btcaddress" class="col-sm-3 control-label">Intermediate Bitcoin Address:</label>
             <div class="col-sm-8">
               <input type="text" name="btcaddress" ng-model="btcAddress" id="btcaddress" class="form-control" disabled="disabled">
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group" ng-show="ethAddress">
             <label class="col-sm-3 control-label">Intermediate Private Key:</label>
             <div class="col-sm-8">
               <button type="button" class="btn btn-default" ng-click="showKey = !showKey">{{ showKey ? "Hide" : "Show" }}</button>
