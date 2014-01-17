@@ -72,7 +72,10 @@
           </div>
           -->
           <div class="row" ng-show="ethAddress">
-            <div class="col-sm-8 col-sm-offset-4">
+            <div class="col-sm-4">
+              <textarea class="form-control" cols="20" rows="5" ng-model="status" id="status" readonly></textarea>
+            </div>
+            <div class="col-sm-8">
               <a href="bitcoin:{{btcAddress}}"><div id="qr_deposit_address"></div></a>
             </div>
           </div>
@@ -93,7 +96,7 @@
 
       </form>
 
-      <input type="text" ng-model="status"></input>
+      
       <textarea ng-model="result"></textarea>
 
     </div> <!--/PurchaseCtrl-->

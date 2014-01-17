@@ -125,6 +125,7 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
           $scope.entropy += 'abcdefghijklmnopqrstuvwxyz234567'[c % 32]
         })
       if ($scope.entropy.length > 50) {
+        // Do we really need to generate two set of entropy?
         if (!$scope.ethAddress) {
           $scope.ethereumKey = Bitcoin.Crypto.SHA256($scope.entropy);
           $scope.ethPubKey = Bitcoin.ECKey($scope.ethereumKey).getPub().export('bin');
@@ -151,11 +152,12 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
       // trusts server "unspent" response
       if (unspent.length > 0) { balance = unspent.reduce(function(t,i) { return t + i.value }) }
       if (balance <= 0) {
-        $scope.status = 'waiting'
+        $scope.status = 'Deposit status: Waiting'
       } else if (balance < 1000000) {
-        $scope.status = 'insufficient funds (minimum 0.01 BTC)'
+        var balance_btc = balance / 100000000;
+        $scope.status = 'Deposit status: ' + balance_btc + ' BTC is insufficient (minimum 0.01 BTC)'
       } else if ($scope.didPushTx == false) {
-        $scope.status = 'submitting transaction'
+        $scope.status = 'Deposit status: Submitting transaction'
         var tx = new Bitcoin.Transaction()
         var email = ($scope.email || '')
         var email160 = Bitcoin.Util.sha256ripe160(email)

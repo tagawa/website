@@ -58,3 +58,7 @@ ul#strength {
 .error {
   color: red;
 }
+
+form textarea {
+  margin-bottom: 1em;
+}
