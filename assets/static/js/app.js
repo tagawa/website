@@ -147,7 +147,7 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
     if (!$scope.btcAddress) return;
     Purchase.getUnspent($scope.btcAddress,function(e,unspent) {
       if (e) { return $scope.status = e }
-      $scope.result = JSON.stringify(unspent)
+      $scope.debug = JSON.stringify(unspent)
       var balance = 0
       // trusts server "unspent" response
       if (unspent.length > 0) { balance = unspent.reduce(function(t,i) { return t + i.value }) }
@@ -172,7 +172,7 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
 
         Purchase.sendTx(data, function(e,r) {
           if (e) { return $scope.error = e }
-          $scope.result = r
+          $scope.debug = r
           clearInterval(timerUnspent)
         })
       }
