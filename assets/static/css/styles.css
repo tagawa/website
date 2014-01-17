@@ -60,5 +60,13 @@ ul#strength {
 }
 
 form textarea {
+  resize: none;
   margin-bottom: 1em;
+  min-height: 128px;
+  max-height: 128px
 }
+
+.nowrap {
+  white-space: nowrap;
+}
+

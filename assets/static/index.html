@@ -55,7 +55,7 @@
 
         <div ng-hide="purchase_form.$invalid">
           <div class="form-group">
-            <label class="col-sm-4 control-label">Ethereum Address:</label>
+            <label class="col-sm-4 control-label nowrap">Ethereum Address:</label>
             <div class="col-sm-8">
               <span>{{ ethAddress || "Move your mouse to generate a new address" }}</span>
             </div>
@@ -73,23 +73,24 @@
           -->
           <div class="row" ng-show="ethAddress">
             <div class="col-sm-4">
-              <textarea class="form-control" cols="20" rows="5" ng-model="status" id="status" readonly></textarea>
+              <textarea class="form-control" ng-model="status" id="status" readonly></textarea>
             </div>
             <div class="col-sm-8">
-              <a href="bitcoin:{{btcAddress}}"><div id="qr_deposit_address"></div></a>
+              <div id="qr_deposit_address"></div>
             </div>
           </div>
           <div class="form-group" ng-show="ethAddress">
             <label for="btcaddress" class="col-sm-4 control-label">Intermediate Bitcoin Address:</label>
             <div class="col-sm-8">
-              <input type="text" name="btcaddress" ng-model="btcAddress" id="btcaddress" class="form-control" disabled="disabled">
+              <a href="bitcoin:{{btcAddress}}" class="nowrap">{{btcAddress}}</a>
+              <!--<input type="text" name="btcaddress" ng-model="btcAddress" id="btcaddress" class="form-control" disabled="disabled">-->
             </div>
           </div>
           <div class="form-group" ng-show="ethAddress">
             <label class="col-sm-4 control-label">Intermediate Private Key:</label>
             <div class="col-sm-8">
               <button type="button" class="btn btn-default" ng-click="showKey = !showKey">{{ showKey ? "Hide" : "Show" }}</button>
-              <input type="text" class="form-control" ng-show="showKey" ng-model="btcKey">
+              <input type="text" class="form-control" ng-show="showKey" ng-model="btcKey" readonly="">
             </div>
           </div>
         </div>
