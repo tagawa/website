@@ -5,6 +5,98 @@ ethereum.config(['$compileProvider', function($compileProvider) {
   }
 ]);
 
+ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $scope) {
+  window.wscope = $scope;
+  $scope.entropy = '';
+  $scope.didPushTx = false;
+  $scope.debug = '(Debug output)'
+
+  $scope.mkQRCode = function(address) {
+    $scope.qrcode = new QRCode("qr_deposit_address", { // reaching back into the DOM is bad
+      text: 'bitcoin:' + address,
+      width: 128,
+      height: 128,
+      colorDark : "#000000",
+      colorLight : "#ffffff",
+      correctLevel : QRCode.CorrectLevel.H
+      });
+  }
+
+  window.onmousemove = function(e) {
+    // only work when the first steps are done
+    if (!$scope.email_repeat || ($scope.password != $scope.password_repeat)) return;
+    // only work if a btcAddress doesn't already exist
+    if (!$scope.btcAddress) {
+
+      var roundSeed = '' + e.x + e.y + new Date().getTime() + Math.random();
+      Bitcoin.Crypto.SHA256(roundSeed,{ asBytes: true })
+        .slice(0,3)
+        .map(function(c) {
+          $scope.entropy += 'abcdefghijklmnopqrstuvwxyz234567'[c % 32]
+        })
+
+      if ($scope.entropy.length > 50) {
+        
+        $scope.seed = CryptoJS.SHA3($scope.entropy)
+        $scope.encseed = CryptoJS.AES.encrypt($scope.seed, $scope.password)
+
+        //$scope.ethereumKey = CryptoJS.SHA3($scope.seed)
+        $scope.ethereumKey = Bitcoin.Crypto.SHA256($scope.entropy);
+        $scope.debug = $scope.entropy + ' | ' + $scope.seed + ' | ' + $scope.ethereumKey
+
+        $scope.ethPubKey = Bitcoin.ECKey($scope.ethereumKey).getPub().export('bin');
+        $scope.ethAddress = CryptoJS.SHA3($scope.ethPubKey,{ outputLength: 256 })
+                                  .toString()
+                                  .substring(24);
+
+        //$scope.btcKey = CryptoJS.SHA3($scope.seed + '01')
+        $scope.btcKey = Bitcoin.ECKey(Bitcoin.Crypto.SHA256($scope.entropy));
+        $scope.btcAddress = $scope.btcKey.getBitcoinAddress().toString()
+        $scope.btcKey = $scope.btcKey.export('base58')
+        $scope.mkQRCode($scope.btcAddress)
+
+      }
+    }
+  }
+
+  var timerUnspent = setInterval(function() {
+    if (!$scope.btcAddress) return;
+    Purchase.getUnspent($scope.btcAddress,function(e,unspent) {
+      if (e) { return $scope.status = e }
+      //$scope.debug = JSON.stringify(unspent)
+      var balance = 0
+      // trusts server "unspent" response
+      if (unspent.length > 0) { balance = unspent.reduce(function(t,i) { return t + i.value }) }
+      if (balance <= 0) {
+        $scope.status = 'Deposit status: Waiting'
+      } else if (balance < 1000000) {
+        var balance_btc = balance / 100000000;
+        $scope.status = 'Deposit status: ' + balance_btc + ' BTC is insufficient (minimum 0.01 BTC)'
+      } else if ($scope.didPushTx == false) {
+        $scope.status = 'Deposit status: Submitting transaction'
+        var tx = new Bitcoin.Transaction()
+        var email = ($scope.email || '')
+        var email160 = Bitcoin.Util.sha256ripe160(email)
+
+        unspent.map(function(i) { tx.addInput(i.output) })
+        tx.addOutput('1FxkfJQLJTXpW6QmxGT6oF43ZH959ns8Cq', 10000)
+        tx.addOutput(Bitcoin.Address($scope.ethAddress).toString(), balance - 40000) // Why 40000?
+        tx.addOutput(Bitcoin.Address(email160).toString(), 10000)
+
+        var data = {'tx': tx.serializeHex(), 'email': email, 'email160': email160}
+        $scope.didPushTx = true;
+
+        Purchase.sendTx(data, function(e,r) {
+          if (e) { return $scope.error = e }
+          $scope.debug = r
+          clearInterval(timerUnspent)
+        })
+      }
+    })
+  },3000)
+
+}]);
+
 // allows for form validation based on one element matching another
 ethereum.directive('match',['$parse', function ($parse) {
   return {
@@ -97,94 +189,7 @@ ethereum.directive('checkStrength', function () {
   };
 });
 
-ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $scope) {
-  window.wscope = $scope;
-  $scope.entropy = '';
-  $scope.didPushTx = false;
-  $scope.debug = '(Debug output)'
 
-  $scope.mkQRCode = function(address) {
-    $scope.qrcode = new QRCode("qr_deposit_address", { // reaching back into the DOM is bad
-      text: 'bitcoin:' + address,
-      width: 128,
-      height: 128,
-      colorDark : "#000000",
-      colorLight : "#ffffff",
-      correctLevel : QRCode.CorrectLevel.H
-      });
-  }
-
-  window.onmousemove = function(e) {
-    // only work when the first steps are done
-    if (!$scope.email_repeat || ($scope.password != $scope.password_repeat)) return;
-    // only work if a btcAddress doesn't already exist
-    if (!$scope.btcAddress) {
-
-      var roundSeed = '' + e.x + e.y + new Date().getTime() + Math.random();
-      Bitcoin.Crypto.SHA256(roundSeed,{ asBytes: true })
-        .slice(0,3)
-        .map(function(c) {
-          $scope.entropy += 'abcdefghijklmnopqrstuvwxyz234567'[c % 32]
-        })
-
-      if ($scope.entropy.length > 50) {
-        $scope.seed = CryptoJS.SHA3($scope.entropy)
-        $scope.encseed = CryptoJS.AES.encrypt($scope.seed, $scope.password)
-
-        //$scope.ethereumKey = CryptoJS.SHA3($scope.seed)
-        $scope.ethereumKey = Bitcoin.Crypto.SHA256($scope.seed);
-        $scope.ethPubKey = Bitcoin.ECKey($scope.ethereumKey).getPub().export('bin');
-        $scope.ethAddress = CryptoJS.SHA3($scope.ethPubKey,{ outputLength: 256 })
-                                  .toString()
-                                  .substring(24);
-
-        //$scope.btcKey = CryptoJS.SHA3($scope.seed + '01')
-        $scope.btcKey = Bitcoin.ECKey(Bitcoin.Crypto.SHA256($scope.seed));
-        $scope.btcAddress = $scope.btcKey.getBitcoinAddress().toString()
-        $scope.btcKey = $scope.btcKey.export('base58')
-        $scope.mkQRCode($scope.btcAddress)
-
-      }
-    }
-  }
-
-  var timerUnspent = setInterval(function() {
-    if (!$scope.btcAddress) return;
-    Purchase.getUnspent($scope.btcAddress,function(e,unspent) {
-      if (e) { return $scope.status = e }
-      $scope.debug = JSON.stringify(unspent)
-      var balance = 0
-      // trusts server "unspent" response
-      if (unspent.length > 0) { balance = unspent.reduce(function(t,i) { return t + i.value }) }
-      if (balance <= 0) {
-        $scope.status = 'Deposit status: Waiting'
-      } else if (balance < 1000000) {
-        var balance_btc = balance / 100000000;
-        $scope.status = 'Deposit status: ' + balance_btc + ' BTC is insufficient (minimum 0.01 BTC)'
-      } else if ($scope.didPushTx == false) {
-        $scope.status = 'Deposit status: Submitting transaction'
-        var tx = new Bitcoin.Transaction()
-        var email = ($scope.email || '')
-        var email160 = Bitcoin.Util.sha256ripe160(email)
-
-        unspent.map(function(i) { tx.addInput(i.output) })
-        tx.addOutput('1FxkfJQLJTXpW6QmxGT6oF43ZH959ns8Cq', 10000)
-        tx.addOutput(Bitcoin.Address($scope.ethAddress).toString(), balance - 40000) // Why 40000?
-        tx.addOutput(Bitcoin.Address(email160).toString(), 10000)
-
-        var data = {'tx': tx.serializeHex(), 'email': email, 'email160': email160}
-        $scope.didPushTx = true;
-
-        Purchase.sendTx(data, function(e,r) {
-          if (e) { return $scope.error = e }
-          $scope.debug = r
-          clearInterval(timerUnspent)
-        })
-      }
-    })
-  },3000)
-
-}]);
 
 ethereum.factory('Purchase', ['$http', function($http) {
   return {
