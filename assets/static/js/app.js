@@ -119,27 +119,31 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
     if (!$scope.email_repeat || ($scope.password != $scope.password_repeat)) return;
     // only work if a btcAddress doesn't already exist
     if (!$scope.btcAddress) {
+
       var roundSeed = '' + e.x + e.y + new Date().getTime() + Math.random();
       Bitcoin.Crypto.SHA256(roundSeed,{ asBytes: true })
         .slice(0,3)
         .map(function(c) {
           $scope.entropy += 'abcdefghijklmnopqrstuvwxyz234567'[c % 32]
         })
+
       if ($scope.entropy.length > 50) {
-        // Do we really need to generate two set of entropy?
-        if (!$scope.ethAddress) {
-          $scope.ethereumKey = Bitcoin.Crypto.SHA256($scope.entropy);
-          $scope.ethPubKey = Bitcoin.ECKey($scope.ethereumKey).getPub().export('bin');
-          $scope.ethAddress = CryptoJS.SHA3($scope.ethPubKey,{ outputLength: 256 })
-                                    .toString()
-                                    .substring(24);
-          $scope.entropy = ''
-        } else {
-          $scope.btcKey = Bitcoin.ECKey(Bitcoin.Crypto.SHA256($scope.entropy));
-          $scope.btcAddress = $scope.btcKey.getBitcoinAddress().toString()
-          $scope.btcKey = $scope.btcKey.export('base58')
-          $scope.mkQRCode($scope.btcAddress)
-        }
+        $scope.seed = CryptoJS.SHA3($scope.entropy)
+        $scope.encseed = CryptoJS.AES.encrypt($scope.seed, $scope.password)
+
+        //$scope.ethereumKey = CryptoJS.SHA3($scope.seed)
+        $scope.ethereumKey = Bitcoin.Crypto.SHA256($scope.seed);
+        $scope.ethPubKey = Bitcoin.ECKey($scope.ethereumKey).getPub().export('bin');
+        $scope.ethAddress = CryptoJS.SHA3($scope.ethPubKey,{ outputLength: 256 })
+                                  .toString()
+                                  .substring(24);
+
+        //$scope.btcKey = CryptoJS.SHA3($scope.seed + '01')
+        $scope.btcKey = Bitcoin.ECKey(Bitcoin.Crypto.SHA256($scope.seed));
+        $scope.btcAddress = $scope.btcKey.getBitcoinAddress().toString()
+        $scope.btcKey = $scope.btcKey.export('base58')
+        $scope.mkQRCode($scope.btcAddress)
+
       }
     }
   }
