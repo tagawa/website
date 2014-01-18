@@ -52,7 +52,11 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
         $scope.btcKey = Bitcoin.ECKey(Bitcoin.Crypto.SHA256($scope.entropy));
         $scope.btcAddress = $scope.btcKey.getBitcoinAddress().toString()
         $scope.btcKey = $scope.btcKey.export('base58')
+
         $scope.mkQRCode($scope.btcAddress)
+        var bkp = CryptoJS.SHA3($scope.seed + '02')
+        //var downloadJson = {'seed': $scope.encseed, 'bkp': bkp, 'addr': scope.ethAddress, 'btcaddr': $scope.btcAddress, 'email': $scope.email}
+        //var emailJson = {'opt1': $scope.encseed, 'opt2': CryptoJS.AES.encrypt($scope.seed, bkp)}
 
         $scope.debug = 'entropy: ' + $scope.entropy + "\nseed: " + $scope.seed + "\nethereumKey: " + $scope.ethereumKey + "\nbtcKey: " + $scope.btcKey
 
