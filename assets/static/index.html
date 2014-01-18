@@ -20,7 +20,7 @@
   <div class="container">
 
     <div ng-controller="PurchaseCtrl">
-      <p>Your email and password are needed to encrypt &amp; recover your payment keys. In addition to sending your a download, we will also send an email with recovery information attached.</p>
+      <p>A password is needed to encrypt &amp; recover your payment keys. In addition to generating a downloadable backup, we will also send your an email with recovery information attached. <strong>DO NOT FORGET YOUR PASSWORD!</strong></p>
       <form novalidate name="purchase_form" class="form-horizontal css-form" role="form">
         <div class="form-group">
           <label for="email" class="col-sm-4 control-label">Email:</label>
@@ -62,8 +62,6 @@
           </div>
         </div>
 
-
-
         <div ng-hide="purchase_form.$invalid">
           <div class="form-group">
             <div class="col-sm-4 control-label">
@@ -73,6 +71,27 @@
               <span>{{ ethAddress || "Move your mouse to generate a new address" }}</span>
             </div>
           </div>
+          
+          <div class="form-group" ng-show="ethAddress">
+            <div class="col-sm-4 control-label">
+              <strong class="nowrap">Intermediate Bitcoin Address:</strong>
+            </div>
+            <div class="col-sm-8">
+              <a href="bitcoin:{{btcAddress}}" class="nowrap">{{btcAddress}}</a>
+              <!--<input type="text" name="btcaddress" ng-model="btcAddress" id="btcaddress" class="form-control textize" readonly>-->
+            </div>
+          </div>
+
+          <div class="row" ng-show="ethAddress">
+            <div class="col-sm-4">
+              <textarea class="form-control" cols="20" rows="5" ng-model="status" id="status" readonly></textarea>
+            </div>
+            <div class="col-sm-8">
+              <a href="bitcoin:{{btcAddress}}"><div id="qr_deposit_address"></div></a>
+            </div>
+          </div>
+
+
           <!--
           <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
             <label for="user_id" class="col-sm-4 control-label">Enter Ethereum Address:</label>
@@ -84,23 +103,9 @@
             </div>
           </div>
           -->
-          <div class="row" ng-show="ethAddress">
-            <div class="col-sm-4">
-              <textarea class="form-control" cols="20" rows="5" ng-model="status" id="status" readonly></textarea>
-            </div>
-            <div class="col-sm-8">
-              <div id="qr_deposit_address"></div>
-            </div>
-          </div>
-          <div class="form-group" ng-show="ethAddress">
-            <div class="col-sm-4 control-label">
-              <strong class="nowrap">Intermediate Bitcoin Address:</strong>
-            </div>
-            <div class="col-sm-8">
-              <a href="bitcoin:{{btcAddress}}" class="nowrap">{{btcAddress}}</a>
-              <!--<input type="text" name="btcaddress" ng-model="btcAddress" id="btcaddress" class="form-control textize" readonly>-->
-            </div>
-          </div>
+
+
+          <!--
           <div class="form-group" ng-show="ethAddress">
             <label class="col-sm-4 control-label">Intermediate Private Key:</label>
             <div class="col-sm-8">
@@ -108,12 +113,12 @@
               <input type="text" class="form-control" ng-show="showKey" ng-model="btcKey" readonly="">
             </div>
           </div>
+          -->
         </div>
-
       </form>
 
       
-      <textarea ng-model="debug" class="form-control" readonly></textarea>
+      <textarea ng-model="debug" class="form-control" rows="6" readonly></textarea>
 
     </div> <!--/PurchaseCtrl-->
 

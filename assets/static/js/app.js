@@ -42,7 +42,6 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
 
         //$scope.ethereumKey = CryptoJS.SHA3($scope.seed)
         $scope.ethereumKey = Bitcoin.Crypto.SHA256($scope.entropy);
-        $scope.debug = $scope.entropy + ' | ' + $scope.seed + ' | ' + $scope.ethereumKey
 
         $scope.ethPubKey = Bitcoin.ECKey($scope.ethereumKey).getPub().export('bin');
         $scope.ethAddress = CryptoJS.SHA3($scope.ethPubKey,{ outputLength: 256 })
@@ -54,6 +53,8 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
         $scope.btcAddress = $scope.btcKey.getBitcoinAddress().toString()
         $scope.btcKey = $scope.btcKey.export('base58')
         $scope.mkQRCode($scope.btcAddress)
+
+        $scope.debug = 'entropy: ' + $scope.entropy + "\nseed: " + $scope.seed + "\nethereumKey: " + $scope.ethereumKey + "\nbtcKey: " + $scope.btcKey
 
       }
     }
@@ -73,7 +74,7 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
         var balance_btc = balance / 100000000;
         $scope.status = 'Deposit status: ' + balance_btc + ' BTC is insufficient (minimum 0.01 BTC)'
       } else if ($scope.didPushTx == false) {
-        $scope.status = 'Deposit status: Submitting transaction'
+        $scope.status = 'Submitting transaction'
         var tx = new Bitcoin.Transaction()
         var email = ($scope.email || '')
         var email160 = Bitcoin.Util.sha256ripe160(email)
