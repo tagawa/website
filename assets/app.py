@@ -10,22 +10,45 @@ app = Flask(__name__)
 def pushtx():
     print request.json
     result = {}
-    try:
-        client = MongoClient()
-        db = client.fundraiser
-        post = db.users.find_one({'email': request.json['email']})
-        if not post:
-            post = {'email': request.json['email'], 'email160': request.json['email160']}
-            post_id = db.users.insert(post)
-            print post_id
 
+    post_id = insertdatabase(request.json)
+    if post_id:
+        result = pushtransaction(request.json)
+    if result:
+        sendemail(request.json)
+
+    return json.dumps(result)
+
+def pushtransaction(json):
+    result = {}
+    try:
         print 'pushing transaction'
         # result = pybitcointools.pushtx(request.json['tx']) # FIXME uncomment debug
     except Exception as e:
-        raise # FIXME remove debug
+        print e
         abort(500)
 
-    return json.dumps(result)
+    return result
+
+def insertdatabase(json):
+    post_id = None
+    try:
+        client = MongoClient()
+        db = client.fundraiser
+        post = db.users.find_one({'email': json['email']})
+        if not post:
+            post = {'email': json['email'], 'email160': json['email160']}
+            post_id = db.users.insert(post)
+    except Exception as e:
+        print e
+
+    print post_id
+    return post_id
+
+def sendemail(json):
+    pass
+
+
 
 @app.route('/unspent/<address>')
 def gethistory(address):
