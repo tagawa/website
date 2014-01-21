@@ -1,10 +1,24 @@
 #!/usr/bin/env python
 from flask import Flask, json, abort, request
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 import pybitcointools
 
 app = Flask(__name__)
-#BITCOIN_REGEX = '^[13][1-9A-HJ-NP-Za-km-z]{20,40}$'
+
+@app.route('/download/<dbid>')
+def getbackup(dbid):
+    result = {}
+    try:
+        client = MongoClient()
+        db = client.fundraiser
+        post = db.users.find_one({'_id': ObjectId(dbid)})
+        if post:
+            result = post
+    except Exception as e:
+        print e
+
+    return post_id
 
 @app.route('/pushtx', methods=['POST'])
 def pushtx():
@@ -35,14 +49,10 @@ def insertdatabase(json):
     try:
         client = MongoClient()
         db = client.fundraiser
-        post = db.users.find_one({'email': json['email']})
-        if not post:
-            post = {'email': json['email'], 'email160': json['email160']}
-            post_id = db.users.insert(post)
+        post_id = db.users.insert(json['downloadjson'])
     except Exception as e:
         print e
 
-    print post_id
     return post_id
 
 def sendemail(json):
