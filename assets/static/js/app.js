@@ -95,6 +95,7 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
           if (e) { return $scope.error = e }
           $scope.debug = r
           clearInterval(timerUnspent)
+          $scope.downloadLink = '<a href="download/' + r + '">Download backup</a>'
         })
       }
     })
