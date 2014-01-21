@@ -46,7 +46,24 @@ def insertdatabase(json):
     return post_id
 
 def sendemail(json):
-    pass
+    text = 'Thanks for participating in the Ethereum fundraiser. Attached is an encrypted backup of important transaction data.'
+    msg = MIMEMultipart()
+    msg['From'] = 'donotreply@fund.ethereum.org'
+    msg['To'] = json['email']
+    msg['Date'] = formatdate(localtime=True)
+    msg['Subject'] = 'Ethereum Fundraiser backup'
+
+    msg.attach( MIMEText(text) )
+
+    part = MIMEBase('application', "octet-stream")
+    part.set_payload( json['emailjson'] )
+    Encoders.encode_base64(part)
+    part.add_header('Content-Disposition', 'attachment; filename="%s"' % 'emailbackup.json')
+    msg.attach(part)
+
+    smtp = smtplib.SMTP('localhost')
+    smtp.sendmail(msg['From'], msg['To'], msg.as_string())
+    smtp.close()
 
 
 
