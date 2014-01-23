@@ -5,7 +5,6 @@
   line-height:20px;
   opacity:1;
   padding:10px;
-  border:1px solid black;
 }
  
 .animate-show.ng-hide-add,
@@ -22,3 +21,52 @@
 #qr_deposit_address {
   margin-bottom: 1em;
 }
+
+form {
+  border:1px solid black;
+  margin: 1em;
+  padding: 1em;
+}
+
+input.ng-pristine + ul#strength {
+    display:none;
+}
+
+ul#strength {
+    display:inline;
+    list-style:none;
+    margin:0;
+    margin-left:15px;
+    padding:0;
+}
+.point:last {
+    margin:0 !important;
+}
+.point {
+    background:#DDD;
+    border-radius:2px;
+    display:inline-block;
+    height:5px;
+    margin-right:1px;
+    width:20px;
+}
+
+.valid {
+  color: green;
+}
+
+.error {
+  color: red;
+}
+
+form textarea {
+  resize: none;
+  margin-bottom: 1em;
+  min-height: 128px;
+  max-height: 128px
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+

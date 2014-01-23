@@ -8,6 +8,7 @@
   <script src="js/angular-animate.min.js"></script>-->
   <script src="js/qrcode.min.js"></script>
   <script src="js/bitcoinjs-min.js"></script>
+  <script src="js/aes.js"></script>
   <script src="js/sha3.js"></script>
   <script src="js/app.js"></script>
 
@@ -19,55 +20,105 @@
   <div class="container">
 
     <div ng-controller="PurchaseCtrl">
-      
-      <form name="purchase_form" class="animate-show form-horizontal" role="form">
-        <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
-          <label class="col-sm-3 control-label">Ethereum Address:</label>
+      <p>A password is needed to encrypt &amp; recover your payment keys. In addition to generating a downloadable backup, we will also send your an email with recovery information attached. <strong>DO NOT FORGET YOUR PASSWORD!</strong></p>
+      <form novalidate name="purchase_form" class="form-horizontal css-form" role="form">
+        <div class="form-group">
+          <label for="email" class="col-sm-4 control-label">Email:</label>
           <div class="col-sm-8">
-            <span>{{ ethAddress || entropy || "Move your mouse to generate a new address" }}</span>
-          </div>
-        </div>
-        <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
-          <label for="user_id" class="col-sm-3 control-label">Enter Ethereum Address:</label>
-          <div class="col-sm-8">
-            <input type="text" name="user_id" ng-model="tempAddress" placeholder="Enter an address here" id="user_id" class="form-control">
-          </div>
-          <div class="col-sm-1">
-            <button class="btn btn-default pull-right" ng-click="ethAddress = tempAddress">Enter</button>
-          </div>
-        </div>
-        <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
-          <label for="email" class="col-sm-3 control-label">Email:</label>
-          <div class="col-sm-8">
-            <input type="text" name="email" ng-model="email" id="email" class="form-control" placeholder="account@domain.tld">
+            <input type="email" name="email" ng-model="email" id="email" placeholder="account@domain.tld" class="form-control" required ng-disabled="ethAddress">
+            <span class="error" ng-show="purchase_form.email.$error.required">&#10008; Required</span></span>
+            <span class="error" ng-show="purchase_form.email.$error.email">&#10008; Invalid format</span></span>
+            <span class="valid" ng-show="purchase_form.email.$valid">&#10004; Looks good!</span>
           </div>
         </div>
 
-        <div ng-show="ethAddress">
-          <div class="row">
-            <div class="col-sm-8 col-sm-offset-3">
+        <div class="form-group" ng-hide="ethAddress">
+          <label for="email_repeat" class="col-sm-4 control-label">Confirm email:</label>
+          <div class="col-sm-8">
+            <input type="email" name="email_repeat" ng-model="email_repeat" id="email_repeat" placeholder="account@domain.tld" class="form-control" required ng-disabled="ethAddress" data-match="email">
+            <span class="error" ng-show="purchase_form.email_repeat.$error.required">&#10008; Required</span></span>
+            <span class="error" ng-show="purchase_form.email_repeat.$error.match">&#10008; No match</span>
+            <span class="valid" ng-show="purchase_form.email_repeat.$valid">&#10004; Looks good!</span>
+          </div>
+        </div>
+
+        <div class="form-group" ng-hide="ethAddress">
+          <label for="password" class="col-sm-4 control-label">Password:</label>
+          <div class="col-sm-8">
+            <input type="password" name="password" ng-model="password" id="password" class="form-control" required ng-disabled="ethAddress">
+            <span class="error" ng-show="purchase_form.password.$error.required">&#10008; Required</span>
+            <span class="valid" ng-show="purchase_form.password.$valid">&#10004; Looks good!</span>
+            <ul id="strength" check-strength="password"></ul>
+          </div>
+        </div>
+
+        <div class="form-group" ng-hide="ethAddress">
+          <label for="password_repeat" class="col-sm-4 control-label">Confirm password:</label>
+          <div class="col-sm-8">
+            <input type="password" name="password_repeat" ng-model="password_repeat" id="password_repeat" class="form-control" required  data-match="password" ng-disabled="ethAddress">
+            <span class="error" ng-show="purchase_form.password_repeat.$error.required">&#10008; Required</span>
+            <span class="error" ng-show="purchase_form.password_repeat.$error.match">&#10008; No match</span>
+            <span class="valid" ng-show="purchase_form.password_repeat.$valid">&#10004; Looks good!</span>
+          </div>
+        </div>
+
+        <div ng-hide="purchase_form.$invalid">
+          <div class="form-group">
+            <div class="col-sm-4 control-label">
+              <strong class="nowrap">Ethereum Address:</strong>
+            </div>
+            <div class="col-sm-8">
+              <span>{{ ethAddress || "Move your mouse to generate a new address" }}</span>
+            </div>
+          </div>
+          
+          <div class="form-group" ng-show="ethAddress">
+            <div class="col-sm-4 control-label">
+              <strong class="nowrap">Intermediate Bitcoin Address:</strong>
+            </div>
+            <div class="col-sm-8">
+              <a href="bitcoin:{{btcAddress}}" class="nowrap">{{btcAddress}}</a>
+              <!--<input type="text" name="btcaddress" ng-model="btcAddress" id="btcaddress" class="form-control textize" readonly>-->
+            </div>
+          </div>
+
+          <div class="row" ng-show="ethAddress">
+            <div class="col-sm-4">
+              <textarea class="form-control" cols="20" rows="5" ng-model="status" id="status" readonly></textarea>
+            </div>
+            <div class="col-sm-8">
               <a href="bitcoin:{{btcAddress}}"><div id="qr_deposit_address"></div></a>
             </div>
           </div>
-          <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
-            <label for="btcaddress" class="col-sm-3 control-label">Intermediate Bitcoin Address:</label>
-            <div class="col-sm-8">
-              <input type="text" name="btcaddress" ng-model="btcAddress" id="btcaddress" class="form-control">
-            </div>
-          </div>
-          <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
-            <label class="col-sm-3 control-label">Intermediate Private Key:</label>
-            <div class="col-sm-8">
-              <span ng-show="showKey">{{ btcKey }}</span>
-              <button class="btn btn-default" ng-click="showKey = !showKey">{{ showKey ? "Hide" : "Show" }}</button>
-            </div>
-          </div>
-        </div>
 
+
+          <!--
+          <div class="form-group" ng-class="{error: purchase_form.bitcoin_address.$invalid}">
+            <label for="user_id" class="col-sm-4 control-label">Enter Ethereum Address:</label>
+            <div class="col-sm-8">
+              <input type="text" name="user_id" ng-model="tempAddress" placeholder="Enter an address here" id="user_id" class="form-control">
+            </div>
+            <div class="col-sm-1">
+              <button class="btn btn-default pull-right" ng-click="ethAddress = tempAddress">Enter</button>
+            </div>
+          </div>
+          -->
+
+
+          <!--
+          <div class="form-group" ng-show="ethAddress">
+            <label class="col-sm-4 control-label">Intermediate Private Key:</label>
+            <div class="col-sm-8">
+              <button type="button" class="btn btn-default" ng-click="showKey = !showKey">{{ showKey ? "Hide" : "Show" }}</button>
+              <input type="text" class="form-control" ng-show="showKey" ng-model="btcKey" readonly="">
+            </div>
+          </div>
+          -->
+        </div>
       </form>
 
-      <input type="text" ng-model="status"></input>
-      <textarea ng-model="result"></textarea>
+      <span ng-show="downloadLink">{{downloadLink}}</span>
+      <textarea ng-model="debug" class="form-control" rows="6" readonly></textarea>
 
     </div> <!--/PurchaseCtrl-->
 
