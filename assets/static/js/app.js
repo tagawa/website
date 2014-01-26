@@ -34,7 +34,7 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
         .map(function(c) {
           $scope.entropy += 'abcdefghijklmnopqrstuvwxyz234567'[c % 32]
         })
-
+      $scope.entropy = 'qwe' // TODO remove debug
       if ($scope.entropy.length > 50) {
         
         $scope.seed = CryptoJS.SHA3($scope.entropy)
