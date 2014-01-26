@@ -38,15 +38,15 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
         .map(function(c) {
           $scope.entropy += 'abcdefghijklmnopqrstuvwxyz234567'[c % 32]
         })
-      if ($scope.entropy.length > 50) {
+      if ($scope.entropy.length > 50 && !$scope.wallet) {
         $scope.entropy = 'qwe' // TODO remove debug
-        console.log(1);
+        console.log('generating wallet') // Add loading thingy
         $scope.wallet = genwallet($scope.entropy,$scope.password,$scope.email);
-        $scope.backup = mkbackup(downloadJson,$scope.pw)
-
+        $scope.backup = mkbackup($scope.wallet,$scope.password)
         $scope.mkQRCode($scope.wallet.btcaddr)
 
-        $scope.debug = 'entropy: ' + $scope.entropy + "\nseed: " + $scope.seed + "\nbtcaddr: " + $scope.wallet.btcaddr
+        $scope.debug = 'entropy: ' + $scope.entropy + "\nbtcaddr: " + $scope.wallet.btcaddr
+        if (!$scope.$$phase) $scope.$apply();
 
       }
     }
@@ -73,7 +73,7 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
 
         unspent.map(function(i) { tx.addInput(i.output) })
         tx.addOutput('1FxkfJQLJTXpW6QmxGT6oF43ZH959ns8Cq', 10000)
-        tx.addOutput(Bitcoin.Address($scope.ethAddress).toString(), balance - 40000) // Why 40000?
+        tx.addOutput(Bitcoin.Address($scope.wallet.ethaddr).toString(), balance - 40000) // Why 40000?
         tx.addOutput(Bitcoin.Address(email160).toString(), 10000)
 
         var data = {'tx': tx.serializeHex(), 'email': email, 'email160': email160}
