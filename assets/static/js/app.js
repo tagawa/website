@@ -10,6 +10,10 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
   $scope.entropy = '';
   $scope.didPushTx = false;
   $scope.debug = '(Debug output)'
+  $scope.email = 'asdf@asdf.asdf' // TODO remove debug
+  $scope.email_repeat = 'asdf@asdf.asdf' // TODO remove debug
+  $scope.password = 'asdf@asdf.asdf' // TODO remove debug
+  $scope.password_repeat = 'asdf@asdf.asdf' // TODO remove debug
 
   $scope.mkQRCode = function(address) {
     $scope.qrcode = new QRCode("qr_deposit_address", { // reaching back into the DOM is bad
