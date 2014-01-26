@@ -1,33 +1,15 @@
 #!/usr/bin/env python
 from flask import Flask, json, abort, request
-from pymongo import MongoClient
-from bson.objectid import ObjectId
 import pybitcointools
 
 app = Flask(__name__)
-
-@app.route('/download/<dbid>')
-def getbackup(dbid):
-    result = {}
-    try:
-        client = MongoClient()
-        db = client.fundraiser
-        post = db.users.find_one({'_id': ObjectId(dbid)})
-        if post:
-            result = post
-    except Exception as e:
-        print e
-
-    return post_id
 
 @app.route('/pushtx', methods=['POST'])
 def pushtx():
     print request.json
     result = {}
 
-    post_id = insertdatabase(request.json)
-    if post_id:
-        result = pushtransaction(request.json)
+    result = pushtransaction(request.json)
     if result:
         sendemail(request.json)
 
@@ -43,17 +25,6 @@ def pushtransaction(json):
         abort(500)
 
     return result
-
-def insertdatabase(json):
-    post_id = None
-    try:
-        client = MongoClient()
-        db = client.fundraiser
-        post_id = db.users.insert(json['downloadjson'])
-    except Exception as e:
-        print e
-
-    return post_id
 
 def sendemail(json):
     text = 'Thanks for participating in the Ethereum fundraiser. Attached is an encrypted backup of important transaction data.'
