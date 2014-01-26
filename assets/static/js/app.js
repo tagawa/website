@@ -129,7 +129,7 @@ ethereum.directive('checkStrength', function () {
           var _flags = [_lowerLetters, _upperLetters, _numbers, _symbols];                    
           var _passedMatches = _flags.map(function (el) { return el === true; });
           _matches = 0;
-          for (var i = 0; i < _passedMatches.length; i++) {
+          for (var i = 0, len = _passedMatches.length; i < len; i++) {
             if (_passedMatches[i])
               _matches += 1;
           }
@@ -169,7 +169,7 @@ ethereum.directive('checkStrength', function () {
           element.css({ "display": "inline" });
           var kids = element.children('li');
 
-          for (var i = 0; i < kids.length; i++) {
+          for (var i = 0, len = kids.length; i < len; i++) {
             if (i < c.idx)
               kids[i].style.backgroundColor = c.col;
             else
