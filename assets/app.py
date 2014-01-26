@@ -36,7 +36,7 @@ def pushtx():
 def pushtransaction(json):
     result = {}
     try:
-        print 'pushing transaction'
+        print 'pushing transaction '+request.json['tx']
         # result = pybitcointools.pushtx(request.json['tx']) # FIXME uncomment debug
     except Exception as e:
         print e
@@ -74,8 +74,6 @@ def sendemail(json):
     smtp = smtplib.SMTP('localhost')
     smtp.sendmail(msg['From'], msg['To'], msg.as_string())
     smtp.close()
-
-
 
 @app.route('/unspent/<address>')
 def gethistory(address):
