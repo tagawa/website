@@ -34,31 +34,15 @@ ethereum.controller('PurchaseCtrl', ['Purchase','$scope', function(Purchase, $sc
         .map(function(c) {
           $scope.entropy += 'abcdefghijklmnopqrstuvwxyz234567'[c % 32]
         })
-      $scope.entropy = 'qwe' // TODO remove debug
       if ($scope.entropy.length > 50) {
-        
-        $scope.seed = CryptoJS.SHA3($scope.entropy)
-        $scope.encseed = CryptoJS.AES.encrypt($scope.seed, $scope.password)
+        $scope.entropy = 'qwe' // TODO remove debug
+        console.log(1);
+        $scope.wallet = genwallet($scope.entropy,$scope.password,$scope.email);
+        $scope.backup = mkbackup(downloadJson,$scope.pw)
 
-        //$scope.ethereumKey = CryptoJS.SHA3($scope.seed)
-        $scope.ethereumKey = Bitcoin.Crypto.SHA256($scope.entropy);
+        $scope.mkQRCode($scope.wallet.btcaddr)
 
-        $scope.ethPubKey = Bitcoin.ECKey($scope.ethereumKey).getPub().export('bin');
-        $scope.ethAddress = CryptoJS.SHA3($scope.ethPubKey,{ outputLength: 256 })
-                                  .toString()
-                                  .substring(24);
-
-        //$scope.btcKey = CryptoJS.SHA3($scope.seed + '01')
-        $scope.btcKey = Bitcoin.ECKey(Bitcoin.Crypto.SHA256($scope.entropy));
-        $scope.btcAddress = $scope.btcKey.getBitcoinAddress().toString()
-        $scope.btcKey = $scope.btcKey.export('base58')
-
-        $scope.mkQRCode($scope.btcAddress)
-        var bkp = CryptoJS.SHA3($scope.seed + '02')
-        //var downloadJson = {'seed': $scope.encseed, 'bkp': bkp, 'addr': scope.ethAddress, 'btcaddr': $scope.btcAddress, 'email': $scope.email}
-        //var emailJson = {'opt1': $scope.encseed, 'opt2': CryptoJS.AES.encrypt($scope.seed, bkp)}
-
-        $scope.debug = 'entropy: ' + $scope.entropy + "\nseed: " + $scope.seed + "\nethereumKey: " + $scope.ethereumKey + "\nbtcKey: " + $scope.btcKey
+        $scope.debug = 'entropy: ' + $scope.entropy + "\nseed: " + $scope.seed + "\nbtcaddr: " + $scope.wallet.btcaddr
 
       }
     }
